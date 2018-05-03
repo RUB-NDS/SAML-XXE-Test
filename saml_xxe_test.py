@@ -1,7 +1,6 @@
 #! /usr/bin/env python3
 
 import argparse
-import ast
 import base64
 import datetime
 import os
@@ -23,7 +22,7 @@ DEFAULT_VECTOR_FILE = os.path.join(os.path.dirname(__file__), "default_phase1_ve
 
 DEFAULT_PROTOCOLS = ["http://"]
 EXTENDED_PROTOCOLS = ["file://", "ftp://", "smb://", "netdoc://", "gopher://", "jar://"]
-## phar://, data://, rar://
+## phar://, data://, rar://, //
 
 # You can set any custom headers here.
 DEFAULT_HEADERS = {'X-Custom': 'Test'}
@@ -170,7 +169,6 @@ def main():
 
     # read vector templates from file
     try:
-        # vectors = list(ast.literal_eval(open(os.path.abspath(args.vector_file)).read()))
         with open(args.vector_file) as f:
             vectors = yaml.safe_load(f)
     except Exception:
