@@ -246,22 +246,22 @@ if __name__ == "__main__":
                                " The vectors may contain the following placeholders: \"${PROTOCOLHANDLE}\","
                                " \"${SYSPUB}\", \"${PUBLIC_URL_PLACEHOLDER}\".")
     optional.add_argument("-m", "--method",
-                          help="Which HTTP method to use, default is POST. If set to GET, deflate compression is applied"
-                               " to the SAML message (HTTP-Redirect Binding)",
+                          help="Select which HTTP method to use, default is POST. If set to GET, deflate compression"
+                               "is applied to the SAML message (HTTP-Redirect Binding).",
                           choices=["POST", "GET"], default="POST", )
-    optional.add_argument("-a", "--aggressive", action="store_true", help="Build vectors using more protocolhandlers")
+    optional.add_argument("-a", "--aggressive", action="store_true", help="Build vectors using more protocols.")
     optional.add_argument("-p", "--proxy", help="Add http(s) proxy address as IP:PORT like 127.0.0.1:8080.", type=str)
     optional.add_argument("-d", "--debug", action="store_true", help="enable Debug mode")
     optional.add_argument("-i", "--interval",
                           help="Set request interval delayin seconds. Default is a random interval in " + \
                                str(DEFAULT_WAIT_INTERVAL) + " seconds", type=int, default=0)
-    optional.add_argument("-v", "--verbose", action="store_true", help="Enabled verbose mode puts response to stdout."
-                                                                       "Auto enabled if not output file is specified")
+    optional.add_argument("-v", "--verbose", action="store_true", help="Enabled verbose mode. Sends response to stdout."
+                                                                       "Auto enabled if no output file is specified.")
     optional.add_argument("--timeout", type=int, default=30,
                           help="Seconds to wait until a request is aborted as timed out. Default is 30 seconds.")
-    optional.add_argument("--dump_vectors", action="store_true", help="Print generated DTD vectors and exit")
+    optional.add_argument("--dump_vectors", action="store_true", help="Print generated DTD vectors and exit.")
     optional.add_argument("-s", "--samlparam", choices=["SAMLRequest", "SAMLResponse"], default="SAMLRequest",
-                          help="The HTTP parametername to use, SAMLRequest if not defined")
+                          help="The HTTP parametername to be used. Uses SAMLRequest if not defined.")
     optional.add_argument("--store_test", type=str, default="",
                           help="Store serialized response objects in given filename"
                                " (as python shelve). May be useful for later analysis.")
